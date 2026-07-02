@@ -53,11 +53,14 @@ class MainActivity : AppCompatActivity() {
         val sessionToken = SessionToken(this, ComponentName(this, RadioPlaybackService::class.java))
         val controllerFuture = MediaController.Builder(this, sessionToken).buildAsync()
         controllerFuture.addListener({
-            controller = controllerFuture.get()
-            controller?.addListener(playerListener)
+            try {
+                controller = controllerFuture.get()
+                controller?.addListener(playerListener)
+            } catch (e: Exception) {
+                Toast.makeText(this, "خطأ فالاتصال بخدمة التشغيل: ${e.message}", Toast.LENGTH_LONG).show()
+            }
         }, MoreExecutors.directExecutor())
     }
-
     override fun onStop() {
         super.onStop()
         controller?.removeListener(playerListener)
